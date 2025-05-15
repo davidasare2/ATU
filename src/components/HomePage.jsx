@@ -1,11 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Bell, Home, User, Calendar, BookOpen, Bell as BellIcon, Settings, DollarSign, HelpCircle, Menu, X } from 'lucide-react';
+import { Bell, Home, User, Calendar, BookOpen, Bell as BellIcon, Settings, DollarSign, HelpCircle, Menu, X, Users, BookOpen as Tutorials, LogOut } from 'lucide-react';
 
 function HomePage({ username, onLogout }) {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showNavDropdown, setShowNavDropdown] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const dropdownRef = useRef(null);
+
+  const UserDropdownRef = useRef(null);
+  const NavDropdownRef = useRef(null);
   
   // Handle clicks outside the dropdown to close it
   useEffect(() => {
@@ -13,13 +17,18 @@ function HomePage({ username, onLogout }) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
       }
+
+      if (navDropdownRef.current && !navDropdownRef.current.contains(event.target)) {
+        setShowNavDropdown(false);
+      }
+    
     }
     
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [dropdownRef]);
+  }, [dropdownRef, NavDropdownRef]);
 
   // Get user initials
   const getInitials = (name) => {
@@ -29,8 +38,19 @@ function HomePage({ username, onLogout }) {
       .join('');
   };
 
-  const userInitials = getInitials(username);
-  
+  const userInitials = getInitials(username || "Student User");
+
+  const navItems = [
+    { id: 'overview', label: 'Overview', icon: Home },
+    { id: 'profile', label: 'Profile', icon: User },
+    { id: 'calendar', label: 'Calendar', icon: Calendar },
+    { id: 'resources', label: 'Resources', icon: BookOpen },
+    { id: 'notices', label: 'Notice Board', icon: Bell },
+    { id: 'settings', label: 'Preferences', icon: Settings },
+    { id: 'accounts', label: 'Accounts', icon: DollarSign },
+    { id: 'help', label: 'Help', icon: HelpCircle }
+  ];
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Navigation Header */}
@@ -57,30 +77,86 @@ function HomePage({ username, onLogout }) {
             <div className="relative" ref={dropdownRef}>
               <button 
                 onClick={() => setShowDropdown(!showDropdown)}
-                className="w-10 h-10 bg-white text-[#134B70] rounded-full flex items-center justify-center font-bold"
+                className="w-10 h-10 bg-white text-[#134B70] rounded-full flex items-center justify-center font-bold hover:bg-gray-100 transition-colors duration-200 transform hover:scale-105"
+                aria-label='Open user menu'
               >
                 {userInitials}
               </button>
               
               {showDropdown && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+                <div className="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg py-1 z-10">
                   <div className="px-4 py-3 border-b">
-                    <p className="text-sm font-medium text-gray-900">{username}</p>
-                    <p className="text-xs text-gray-500">ID: STU2023{Math.floor(1000 + Math.random() * 9000)}</p>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 bg-[#E7BD62] rounded-full flex items-center justify-center">
+                        <span className="text-lg font-bold text-white">{userInitials}</span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{username}</p>
+                        <p className="text-xs text-gray-500">ID: {studentId}</p>
+                      </div>
+                    </div>
                   </div>
                   
-                  <button 
-                    onClick={onLogout}
-                    className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                  >
-                    Log out
-                  </button>
+                  <div className="py-1">
+                    <button 
+                      onClick={() => {setActiveTab('profile'); setShowDropdown(false);}}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <User size={16} className="mr-3 text-gray-500" />
+                      <span>Profile</span>
+                    </button>
+                    
+                    <button 
+                      onClick={() => {setActiveTab('connections'); setShowDropdown(false);}}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <Users size={16} className="mr-3 text-gray-500" />
+                      <span>Connections</span>
+                    </button>
+                    
+                    <button 
+                      onClick={() => {setActiveTab('tutorials'); setShowDropdown(false);}}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <Tutorials size={16} className="mr-3 text-gray-500" />
+                      <span>Tutorials</span>
+                    </button>
+                    
+                    <button 
+                      onClick={() => {setActiveTab('calendar'); setShowDropdown(false);}}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <Calendar size={16} className="mr-3 text-gray-500" />
+                      <span>Calendar</span>
+                    </button>
+                    
+                    <button 
+                      onClick={() => {setActiveTab('settings'); setShowDropdown(false);}}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <Settings size={16} className="mr-3 text-gray-500" />
+                      <span>Preferences</span>
+                    </button>
+                  </div>
+                  
+                  <div className="py-1 border-t">
+                    <button 
+                      onClick={onLogout}
+                      className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                    >
+                      <LogOut size={16} className="mr-3" />
+                      <span>Log out</span>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
           </div>
         </div>
       </header>
+
+      
+      
       
       <div className="flex flex-1">
         {/* Left Sidebar Navigation */}
@@ -225,7 +301,7 @@ function HomePage({ username, onLogout }) {
           {activeTab === 'settings' && (
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h2 className="text-2xl font-bold mb-4">Preferences</h2>
-              <p className="text-gray-600">Configure your account preferences here.</p>
+              <p className="text-gray-600">Configure your account preferences and settings.</p>
               <div className="mt-4 space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="font-medium">Enable notifications</span>

@@ -91,6 +91,7 @@ function App() {
             >
               Login
             </button>
+            <div>forget Password</div>
           </form>
         </div>
       </div>
